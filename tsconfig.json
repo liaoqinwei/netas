@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "module": "ES6",
+    "target": "ES6",
+    "declaration": true,
+    "lib": [
+      "ES6",
+      "ES7",
+      "ES5",
+      "dom"
+    ]
+  },
+  "exclude": ["node_modules","**/node_modules"],
+  "include": ["src/**/*"]
+}
