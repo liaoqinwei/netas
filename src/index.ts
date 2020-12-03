@@ -4,4 +4,3 @@ let http: HttpRequest = new HttpRequest()
 // @ts-ignore
 window.netas = http
 
-
