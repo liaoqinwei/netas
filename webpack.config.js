@@ -1,9 +1,10 @@
 let path = require('path')
 
 module.exports = {
+  mode:"development",
   output: {
     filename: "bundle.js",
-    path: path.join(__dirname,"dist")
+    path: path.join(__dirname, "dist")
   },
   entry: "/src/index.ts",
   module: {
@@ -11,18 +12,12 @@ module.exports = {
       {
         test: /\.[j|t]s/,
         exclude: /node_modules/,
-        use:{
-          loader: "babel-loader",
-          options:{
-            presets:["@babel/typescript"],
-            plugins:['syntax-dynamic-import','transform-class-properties']
-          }
-        }
-      }
+        loader: "ts-loader",
+      },
     ]
   },
   resolve: {
-    extensions: ['.js','.ts']
+    extensions: ['.js', '.ts']
   }
 
 }
