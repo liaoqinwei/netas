@@ -20,7 +20,7 @@ export default class AbstractHttp {
         if (this.config.baseUrl !== '')
             url = this.mergeUrl();
         // 缓存
-        if (!this.config.catch)
+        if (!this.config.cache)
             this.config.params['_'] = Date.now();
         for (let key in this.config.params) {
             paramStr += key + '=' + this.config.params[key] + '&';

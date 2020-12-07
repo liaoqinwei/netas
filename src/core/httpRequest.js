@@ -6,7 +6,7 @@ export default class HttpRequest extends AbstractHttp {
             baseUrl: '',
             headers: {},
             data: {},
-            catch: true,
+            cache: true,
             params: {},
             dataType: 'json',
             method: 'get',

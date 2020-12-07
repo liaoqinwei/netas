@@ -11,7 +11,7 @@ export interface NetworkCfg {
   dataType?: dataType
   method?: 'get' | 'head' | 'options' | 'trace' | 'post' | 'put' | 'delete'
   timeout?: number
-  catch?: boolean
+  cache?: boolean
   responseType?: responseType
 }
 

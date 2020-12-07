@@ -3,8 +3,8 @@ let path = require('path')
 module.exports = {
   mode:"development",
   output: {
-    filename: "bundle.js",
-    path: path.join(__dirname, "dist")
+    filename: "netas.js",
+    path: path.join(__dirname, "bin")
   },
   entry: "/src/index.ts",
   module: {
