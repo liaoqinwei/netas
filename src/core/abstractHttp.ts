@@ -9,10 +9,12 @@ export default abstract class AbstractHttp implements Http {
    * 将传入的 url 和 baseUrl合并
    */
   mergeUrl(): string {
-    let url: string = this.config.url
+    let url: string = this.config.url,
+        baseUrl: string = this.config.baseUrl
     if (/^http[s]?:[/]{2}./.test(url)) return url;
+    baseUrl.lastIndexOf('/') === baseUrl.length - 1 ? baseUrl = baseUrl.substring(0, baseUrl.length - 1) : null
     url.indexOf('/') !== 0 ? url = '/' + url : null;
-    return this.config.baseUrl + url;
+    return baseUrl + url;
   }
 
   /**
@@ -30,8 +32,9 @@ export default abstract class AbstractHttp implements Http {
     for (let key in this.config.params) {
       paramStr += key + '=' + this.config.params[key] + '&'
     }
-    url.indexOf('?') === -1 ? url += '?' :
-        url[url.length - 1] !== '&' ? paramStr = '&' + paramStr : null
+    if (paramStr !== "")
+      url.indexOf('?') === -1 ?
+          url += '?' : url[url.length - 1] !== '&' ? paramStr = '&' + paramStr : null
 
     res = url + paramStr
     this.config["finalUrl"] = res
@@ -95,7 +98,7 @@ export default abstract class AbstractHttp implements Http {
     this.configParse(conf)
     this.paramsHandle()
     this.config.xhr.open(this.config.method, this.config["finalUrl"])
-    if(Object.keys(this.config.data).length>0)
+    if (Object.keys(this.config.data).length > 0)
       this.headerHandle()
     this.dataHandle()
     this.processedResponseHandle()
@@ -110,6 +113,7 @@ export default abstract class AbstractHttp implements Http {
       let val = this.config.headers[key]
       xhr.setRequestHeader(key, val)
     }
+    xhr.timeout = this.config.timeout
   }
 
   // 重新响应的mime类型
