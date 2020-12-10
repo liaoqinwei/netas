@@ -2,9 +2,10 @@ let path = require('path')
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 
 module.exports = {
+  mode:"development",
   output: {
-    filename: "bundle.js",
-    path: path.join(__dirname,"dist")
+    filename: "netas.js",
+    path: path.join(__dirname, "bin")
   },
   entry: "/src/index.ts",
   module: {
@@ -12,21 +13,11 @@ module.exports = {
       {
         test: /\.[j|t]s/,
         exclude: /node_modules/,
-        use:{
-          loader: "babel-loader",
-          options:{
-            presets:["@babel/typescript"],
-            plugins:['syntax-dynamic-import','transform-class-properties']
-          }
-        }
-      }
+        loader: "ts-loader",
+      },
     ]
   },
   resolve: {
     extensions: ['.js','.ts']
   },
-  plugins: [
-      new UglifyJsPlugin({uglifyOptions:{mangle:false}})
-  ]
-
 }

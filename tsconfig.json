@@ -1,8 +1,9 @@
 {
   "compilerOptions": {
-    "module": "ES6",
-    "target": "ES6",
+    "module": "CommonJS",
+    "target": "ES5",
     "declaration": true,
+    "outDir": "bin",
     "lib": [
       "ES6",
       "ES7",
@@ -10,6 +11,5 @@
       "dom"
     ]
   },
-  "exclude": ["node_modules","**/node_modules"],
-  "include": ["src/**/*"]
+  "exclude": ["node_modules","**/node_modules"]
 }

@@ -7,7 +7,7 @@ export default class HttpRequest extends AbstractHttp {
     baseUrl: '',
     headers: {},
     data: {},
-    catch: true,
+    cache: true,
     params: {},
     dataType: 'json',
     method: 'get',
@@ -49,6 +49,7 @@ export default class HttpRequest extends AbstractHttp {
     return new HttpRequest();
   }
 
+  // 响应失败
   requestFail(conf: FullRequestCfg): Response {
     let res: Response
     let status = conf.xhr.status,
@@ -56,22 +57,25 @@ export default class HttpRequest extends AbstractHttp {
         headers = conf.xhr.getAllResponseHeaders(),
         reason = conf.xhr.statusText,
         url = conf.finalUrl,
-        headerMap = {}
-    let headerList = headers.trim().split('\n\r')
-    for (let i = 0; i < headerList.length; i += 2) {
-      headerMap[headerList[i]] = headerList[i + 1]
+        headerMap = {};
+    if (headers !== '') {
+      let headerList = headers.trim().split('\n\r')
+      for (let i = 0; i < headerList.length; i += 2) {
+        headerMap[headerList[i]] = headerList[i + 1]
+      }
     }
     res = {status, data, reason, url, headers: headerMap}
     return res
   }
 
+  // 响应成功
   requestSuccess(conf: FullRequestCfg): Response {
     let res: Response
-    let status = conf.xhr.status,
-        data = conf.xhr.response,
-        headers = conf.xhr.getAllResponseHeaders(),
-        reason = conf.xhr.statusText,
-        url = conf.finalUrl,
+    let status: number = conf.xhr.status,
+        data: any = conf.xhr.response,
+        headers: string = conf.xhr.getAllResponseHeaders(),
+        reason: string = conf.xhr.statusText,
+        url: string = conf.finalUrl,
         headerMap = {}
     let headerList = headers.trim().split('\n\r')
     for (let i = 0; i < headerList.length; i += 2) {

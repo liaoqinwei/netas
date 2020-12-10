@@ -1,13 +1,16 @@
 {
   "name": "netas",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "version": "0.0.9",
+  "description": "this library for sending Ajax requests.",
+  "main": "bin/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack --config  ./webpack.config.js"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "netas"
+  ],
+  "author": "liaoqinwei",
   "license": "ISC",
   "devDependencies": {
     "babel-loader": "^8.2.2",
@@ -16,10 +19,6 @@
     "uglifyjs-webpack-plugin": "^2.2.0"
   },
   "dependencies": {
-    "@babel/core": "^7.12.9",
-    "@babel/preset-env": "^7.12.7",
-    "@babel/preset-typescript": "^7.12.7",
-    "webpack": "^5.9.0",
-    "webpack-cli": "^4.2.0"
+    "url": "^0.11.0"
   }
 }

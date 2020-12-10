@@ -1,6 +1,5 @@
 import Http from './http'
 import {FullRequestCfg, NetworkCfg, RequestCfg, requestType, Response} from "../conf/conf"
-import {clone} from "../util/utlil";
 
 export default abstract class AbstractHttp implements Http {
   abstract defaults: NetworkCfg
@@ -10,29 +9,32 @@ export default abstract class AbstractHttp implements Http {
    * 将传入的 url 和 baseUrl合并
    */
   mergeUrl(): string {
-    let url: string = this.config.url
+    let url: string = this.config.url,
+        baseUrl: string = this.config.baseUrl
     if (/^http[s]?:[/]{2}./.test(url)) return url;
+    baseUrl.lastIndexOf('/') === baseUrl.length - 1 ? baseUrl = baseUrl.substring(0, baseUrl.length - 1) : null
     url.indexOf('/') !== 0 ? url = '/' + url : null;
-    return this.config.baseUrl + url;
+    return baseUrl + url;
   }
 
   /**
    * 将传入的 url 参数进行合并
    */
   paramsHandle(): string {
-    let url: string
+    let url: string = this.config.url
     let paramStr: string = ''
     let res: string
 
     if (this.config.baseUrl !== '') url = this.mergeUrl();
     // 缓存
-    if (this.config.catch) this.config.params['_'] = Date.now()
+    if (!this.config.cache) this.config.params['_'] = Date.now()
 
     for (let key in this.config.params) {
       paramStr += key + '=' + this.config.params[key] + '&'
     }
-    url.indexOf('?') === -1 ? url += '?' :
-        url[url.length - 1] !== '&' ? paramStr = '&' + paramStr : null
+    if (paramStr !== "")
+      url.indexOf('?') === -1 ?
+          url += '?' : url[url.length - 1] !== '&' ? paramStr = '&' + paramStr : null
 
     res = url + paramStr
     this.config["finalUrl"] = res
@@ -77,9 +79,9 @@ export default abstract class AbstractHttp implements Http {
   // 配置解析
   configParse(conf: RequestCfg): void {
     let keys: string[] = Object.keys(this.defaults),
-        processedConfig: RequestCfg
+        processedConfig: RequestCfg = conf
     keys.forEach(key => {
-      let item: NetworkCfg = clone<NetworkCfg>(this.defaults[key], true),
+      let item = this.defaults[key],
           confItem = conf[key];
       if (confItem == null)
         confItem = item
@@ -87,18 +89,20 @@ export default abstract class AbstractHttp implements Http {
         confItem = {...confItem, ...item}
       processedConfig[key] = confItem
     })
-    this.config["xhr"] = new XMLHttpRequest()
-    this.config = processedConfig
+    processedConfig["xhr"] = new XMLHttpRequest()
+    this.config = processedConfig as FullRequestCfg
   }
 
   // 发送请求
   send(conf: RequestCfg) {
     this.configParse(conf)
+    this.config.xhr.timeout = this.config.timeout
     this.paramsHandle()
-    this.headerHandle()
+    this.config.xhr.open(this.config.method, this.config["finalUrl"])
+    if (Object.keys(this.config.data).length > 0)
+      this.headerHandle()
     this.dataHandle()
     this.processedResponseHandle()
-    this.config.xhr.open(this.config.method, this.config["finalUrl"])
     this.config.xhr.send(this.config.finalData)
   }
 
@@ -110,6 +114,7 @@ export default abstract class AbstractHttp implements Http {
       let val = this.config.headers[key]
       xhr.setRequestHeader(key, val)
     }
+    xhr.timeout = this.config.timeout
   }
 
   // 重新响应的mime类型
