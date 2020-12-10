@@ -96,6 +96,7 @@ export default abstract class AbstractHttp implements Http {
   // 发送请求
   send(conf: RequestCfg) {
     this.configParse(conf)
+    this.config.xhr.timeout = this.config.timeout
     this.paramsHandle()
     this.config.xhr.open(this.config.method, this.config["finalUrl"])
     if (Object.keys(this.config.data).length > 0)
