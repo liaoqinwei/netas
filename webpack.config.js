@@ -1,4 +1,5 @@
 let path = require('path')
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 
 module.exports = {
   output: {
@@ -23,6 +24,9 @@ module.exports = {
   },
   resolve: {
     extensions: ['.js','.ts']
-  }
+  },
+  plugins: [
+      new UglifyJsPlugin({uglifyOptions:{mangle:false}})
+  ]
 
 }
