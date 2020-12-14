@@ -89,7 +89,7 @@ class XMLHttpRequest {
       if (protocol === 'https:') options.port = 443
       this.readyState = this.LOADING
       // res process
-      let req = http.request(options, this.processResponse)
+      let req = http.request(options, this.processResponse.bind(this))
       this.req = req
       this.processRequest(data)
       // req end
@@ -108,14 +108,12 @@ class XMLHttpRequest {
 
   private processResponse(res) {
     this.res = res
-    console.log(res)
     // save state
     let dataList = [], finalData, encoding;
     let temp = encodingReg.exec(res.headers["content-type"])
     encoding = (temp && temp[1]) || 'utf-8'
     this.status = res.statusCode
     this.statusText = res.statusMessage
-
     res.on('data', data => dataList.push(data))
     res.on('end', () => {
       finalData = Buffer.concat(dataList)
@@ -157,16 +155,21 @@ class XMLHttpRequest {
     this.onerror && this.onerror()
   }
 
+  // 获取请求头
   getResponseHeader(header: string) {
     if (this.readyState === this.DONE)
       return this.res.getHeader(header)
   }
 
   // 获取所有的响应头
-  getAllResponseHeaders(): object {
-    return this.res
+  getAllResponseHeaders(): string {
+    if (this.readyState === this.DONE){
+      let headers = this.res.socket._httpMessage._header
+      return headers.substring(headers.indexOf('\r\n')+2)
+    }
   }
 
+  // 设置请求头
   setRequestHeader(header: string, value: string) {
     if (this.readyState !== this.OPENED) return
     this.headers[header] = value
@@ -177,7 +180,7 @@ class XMLHttpRequest {
   }
 }
 
-
+// 处理FORM-DATA
 function parseFormData(formData: FormData): Buffer {
   let bufferList = []
   // @ts-ignore
@@ -206,6 +209,5 @@ function parseFormData(formData: FormData): Buffer {
   }
   return Buffer.concat(bufferList)
 }
-
 
 module.exports = XMLHttpRequest

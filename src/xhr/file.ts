@@ -9,7 +9,7 @@ class File {
   suffix: string
   path: string
 
-  content: Buffer=null
+  content: Buffer = null
 
   constructor(path) {
     this.path = path
@@ -24,7 +24,7 @@ class File {
   readFile(): void {
     try {
       this.content = fs.readFileSync(this.path)
-    }catch (e) {
+    } catch (e) {
       console.log(e.message)
     }
   }

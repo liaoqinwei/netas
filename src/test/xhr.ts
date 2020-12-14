@@ -13,14 +13,13 @@ fd.append('name', 'zhangsan')
 fd.append('age', '18')
 fd.append('xxx', 'xxxdsa')
 // @ts-ignore
-fd.append('file', new File('./file.ts'))
+fd.append('file', new File('./xhr.ts'))
 
-xhr.open('post', 'http://192.168.200.184:9090/file')
+xhr.open('post', 'http://127.0.0.1:3000/file')
 xhr.onreadystatechange = function () {
-  if (xhr.readyState === 4){
+  if (xhr.readyState === 4) {
     console.log(xhr.status, xhr.statusText)
-    console.dir(xhr.getAllResponseHeaders());
+    console.dir(xhr.getAllResponseHeaders())
   }
 }
-
 xhr.send(fd)
