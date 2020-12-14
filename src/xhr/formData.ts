@@ -1,11 +1,19 @@
 const {v4: uuidv4} = require('uuid')
 
+// @ts-ignores
+const File = require('./file')
+
 // @ts-ignore
 class FormData {
   public datas = {}
-  public id = '------' + uuidv4()
+  public id = '------' + uuidv4().substr(0, 25).replace(/-/g, '')
+  isMultipart: boolean
 
   append(key, val) {
+    if (val instanceof File) {
+      this.isMultipart = true
+    }
+
     (this.datas[key] = [] || []).push(val)
   }
 
@@ -38,4 +46,5 @@ class FormData {
   }
 }
 
+// @ts-ignore
 module.exports = FormData
