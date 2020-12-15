@@ -1,18 +1,22 @@
+// @ts-nocheck
 const http = require('http')
 const url = require('url')
 const isJson = require('is-json')
-// @ts-ignore
 const FormData = require('./formData')
-// @ts-ignore
 const File = require('./file')
 
 type method = 'get' | 'post' | 'put' | 'options' | 'delete' | 'patch' | 'connect' | 'trace' | 'head'
+type sendType = string | object | FormData | undefined | null
+type responseTypeNode = 'json' | 'text' | 'binary'
 
-// let netPathReg = /^http[s]?/
-let encodingReg = /charset=(\S+)[;]?/
+
+let encodingReg: RegExp = /charset=(\S+)[;]?/,
+    emptyFn: Function = new Function(),
+    _defaultErrorFn = err => {
+      throw err
+    };
 
 // node 环境下没有 XHR 我们需要封装一个
-// @ts-ignore
 class XMLHttpRequest {
   constructor() {
     this.readyState = this.UNSENT
@@ -30,15 +34,15 @@ class XMLHttpRequest {
   readonly UNSENT = 0
   headers = {
     'Cache-Control': 'max-age=0',
-    'Accept': '*/*'
+    'Accept': '*/*',
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36"
   }
   timeout = 1000 * 10
 
   // response
   response
   responseText
-  // not support
-  responseType
+  responseType: responseTypeNode = 'text'
 
   // state
   statusText
@@ -68,20 +72,11 @@ class XMLHttpRequest {
     this.method = method
   }
 
-  /*
-  * url 的情况
-  * 文件
-  * /sdad/sadsad
-  * file:///E:\sadad\sad
-  *
-  * http://
-  * https://
-  * */
-  send(data: object | string | FormData): void {
+  send(data: sendType): void {
     // send
     this.readyState = this.HEADERS_RECEIVED
 
-    let options = {...url.parse(this.url), method: this.method, headers: this.headers}
+    let options = {...url.parse(this.url), method: this.method, headers: this.headers, timeout: this.timeout}
     let protocol = options.protocol
     if (protocol !== null) {
       // http / https
@@ -96,11 +91,8 @@ class XMLHttpRequest {
       req.end()
     } else { // file
       this.readyState = this.LOADING
-      // @ts-ignore
       let file = new File(this.url)
-      // @ts-ignore
       this.response = file.content
-      // @ts-ignore
       this.responseText = file.content.toString('utf8')
       this.readyState = this.DONE
     }
@@ -108,7 +100,6 @@ class XMLHttpRequest {
 
   private processResponse(res) {
     this.res = res
-    // save state
     let dataList = [], finalData, encoding;
     let temp = encodingReg.exec(res.headers["content-type"])
     encoding = (temp && temp[1]) || 'utf-8'
@@ -117,93 +108,98 @@ class XMLHttpRequest {
     res.on('data', data => dataList.push(data))
     res.on('end', () => {
       finalData = Buffer.concat(dataList)
-      this.response = finalData
+      // process responseType
+
+      switch (this.responseType) {
+        case "json":
+          this.response = JSON.parse(finalData)
+          break
+        case "binary":
+          this.response = finalData
+          break
+        case "text":
+          this.response = finalData.toString(encoding)
+      }
       this.responseText = finalData.toString(encoding)
       // down
       this.readyState = this.DONE
     })
   }
 
-  private processRequest(data: object | string | FormData) {
-    // req process
+  private processRequest(data: sendType) {
+    // add event
+    this.req.on('timeout', this.ontimeout || emptyFn)
+    this.req.on('abort', this.onabort || emptyFn)
+    this.req.on('error', this.onerror || _defaultErrorFn)
+    // process request body
     if (['post', 'delete', 'put'].includes(this.method.toLowerCase())) {
-      // json / string
-      if (typeof data === 'object' && data !== null && !(data instanceof FormData))
+      if (typeof data === 'object' && data != null && !(data instanceof FormData))
         data = JSON.stringify(data)
       if (typeof data === "string") {
+        // json header
         if (isJson(data))
           this.req.setHeader('Content-Type', 'application/json;charset=utf-8')
+        // text header
         else
           this.req.setHeader('Content-Type', 'text/plain;charset=utf-8')
         this.req.write(data, 'utf-8')
+
       } else if (data instanceof FormData) {
-        // FOMR-DATA
-        // @ts-ignore
+        // FORM-DATA
         this.req.setHeader('Content-Type', `multipart/form-data; boundary=${data.id.substring(2)}`)
         let bufferList = parseFormData(data)
         this.req.write(bufferList)
-        // write end
-        // @ts-ignore
         this.req.write(data.id + '--', 'utf8')
       }
     }
+
   }
 
   abort(): void {
     this.req.destroy()
-    this.onabort && this.onabort()
-    this.onerror && this.onerror()
   }
 
-  // 获取请求头
-  getResponseHeader(header: string) {
+  getResponseHeader(header: string): string {
     if (this.readyState === this.DONE)
-      return this.res.getHeader(header)
+      return this.res.headers[header]
   }
 
-  // 获取所有的响应头
   getAllResponseHeaders(): string {
-    if (this.readyState === this.DONE){
-      let headers = this.res.socket._httpMessage._header
-      return headers.substring(headers.indexOf('\r\n')+2)
+    if (this.readyState === this.DONE) {
+      let headers = ''
+      for (let [header, val] of Object.entries(this.res.headers))
+        headers += header + ': ' + val + '\r\n'
+      return headers.substring(0, headers.length - 2)
     }
   }
 
-  // 设置请求头
+  // set header
   setRequestHeader(header: string, value: string) {
     if (this.readyState !== this.OPENED) return
     this.headers[header] = value
   }
 
-  // 此方法暂定
+  // not support
   overrideMimeType() {
   }
 }
 
-// 处理FORM-DATA
+// Process Form Data into Buffer
 function parseFormData(formData: FormData): Buffer {
   let bufferList = []
-  // @ts-ignore
   for (let [key, val] of formData.entries()) {
     val.forEach(item => {
       let encoding = 'utf-8', filename = '', contentType = '\r\n'
       if (item instanceof File) {
         encoding = 'binary'
-        // @ts-ignore
         filename = `; filename=${item.filename}`
-        // @ts-ignore
         contentType = `Content-type:${item.mime}\r\n\r\n`
-        // @ts-ignore
         item = item.content
         if (item === null) return
       }
-      // @ts-ignore
       bufferList.push(Buffer.from(formData.id + '\r\n', encoding))
-      // @ts-ignore
       bufferList.push(Buffer.from(`Content-Disposition: form-data; name="${key}"${filename}\r\n`, encoding))
-      // @ts-ignore
       bufferList.push(Buffer.from(contentType, encoding))
-      // @ts-ignore
       bufferList.push(Buffer.from(item + '\r\n', encoding))
     })
   }

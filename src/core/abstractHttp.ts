@@ -1,6 +1,15 @@
 import Http from './http'
 import {FullRequestCfg, NetworkCfg, RequestCfg, requestType, Response} from "../conf/conf"
 
+var XMLHttpRequest = XMLHttpRequest
+var FormData = FormData
+if (typeof window == null) {
+  // @ts-ignore
+  XMLHttpRequest = require('../xhr/XMLHttpRequest')
+  // @ts-ignore
+  FormData = require('../xhr/formData')
+}
+
 export default abstract class AbstractHttp implements Http {
   abstract defaults: NetworkCfg
   abstract config: FullRequestCfg
@@ -65,7 +74,7 @@ export default abstract class AbstractHttp implements Http {
   }
 
   // 处理请求头
-  headerParse() {
+  processReqHeader() {
     switch (this.config.dataType) {
       case "json":
         this.config.headers["Content-Type"] = 'application/json'
@@ -109,7 +118,7 @@ export default abstract class AbstractHttp implements Http {
   // 设置请求头
   headerHandle() {
     let xhr = this.config.xhr
-    this.headerParse()
+    this.processReqHeader()
     for (let key in this.config.headers) {
       let val = this.config.headers[key]
       xhr.setRequestHeader(key, val)

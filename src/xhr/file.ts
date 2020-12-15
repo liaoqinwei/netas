@@ -1,8 +1,9 @@
+// @ts-nocheck
 const fs = require('fs')
 const mime = require('mime')
 
 
-// @ts-ignore
+
 class File {
   mime: any
   filename: string
@@ -41,5 +42,4 @@ class File {
   }
 }
 
-// @ts-ignore
 module.exports = File

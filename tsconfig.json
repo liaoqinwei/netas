@@ -3,7 +3,7 @@
     "module": "CommonJS",
     "target": "ES5",
     "declaration": true,
-    "outDir": "bin",
+    "outDir": "lib",
     "lib": [
       "ES6",
       "ES7",
