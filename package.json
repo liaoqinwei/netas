@@ -1,6 +1,6 @@
 {
   "name": "netas",
-  "version": "0.1.3-beta",
+  "version": "0.1.4-beta",
   "description": "this library for sending Ajax requests.",
   "main": "lib/index.js",
   "scripts": {
