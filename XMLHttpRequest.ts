@@ -96,7 +96,7 @@ class XMLHttpRequest {
         this.response = file.content
         this.responseText = file.content.toString('utf8')
       } catch (e) {
-        this.onerror && this.onerror(e)
+        queueMicrotask(() => this.onerror && this.onerror(e))
       }
       this.readyState = this.DONE
     }
