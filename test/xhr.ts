@@ -1,7 +1,7 @@
 // @ts-nocheck
-const XMLHttpRequest = require('../xhr/XMLHttpRequest')
-const FormData = require('../xhr/formData')
-const File = require('../xhr/file')
+const XMLHttpRequest = require('../XMLHttpRequest')
+const FormData = require('../FormData')
+const File = require('../File')
 
 
 let xhr = new XMLHttpRequest(),

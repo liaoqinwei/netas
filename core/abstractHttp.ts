@@ -5,9 +5,9 @@ var XMLHttpRequest = XMLHttpRequest
 var FormData = FormData
 if (typeof window === "undefined") {
   // @ts-ignore
-  XMLHttpRequest = require('../xhr/XMLHttpRequest')
+  XMLHttpRequest = require('../XMLHttpRequest')
   // @ts-ignore
-  FormData = require('../xhr/formData')
+  FormData = require('../FormData')
 }
 
 export default abstract class AbstractHttp implements Http {
@@ -58,8 +58,11 @@ export default abstract class AbstractHttp implements Http {
    */
   dataHandle(): requestType {
     let res: any = this.config.data
-    if (this.config.dataType === 'urlencode') res = this.urlencodedParse()
-    else if (this.config.dataType === 'json') res = JSON.stringify(this.config.data)
+    if (!(res instanceof FormData)) {
+      if (this.config.dataType === 'urlencode') res = this.urlencodedParse()
+      else if (this.config.dataType === 'json') res = JSON.stringify(this.config.data)
+    }
+
     this.config.finalData = res
     return res;
   }
@@ -95,8 +98,9 @@ export default abstract class AbstractHttp implements Http {
 
       if (confItem == null)
         confItem = item
-      else if (typeof confItem === 'object')
+      else if (typeof confItem === 'object' && !(confItem instanceof FormData))
         confItem = {...confItem, ...item}
+
       processedConfig[key] = confItem
     })
 

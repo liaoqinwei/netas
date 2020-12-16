@@ -3,7 +3,6 @@
     "module": "CommonJS",
     "target": "ES5",
     "declaration": true,
-    "outDir": "lib",
     "lib": [
       "ES6",
       "ES7",
@@ -13,6 +12,7 @@
   },
   "exclude": [
     "node_modules",
-    "**/node_modules"
+    "**/node_modules",
+    "test"
   ]
 }

@@ -2,8 +2,8 @@
 const http = require('http')
 const url = require('url')
 const isJson = require('is-json')
-const FormData = require('./formData')
-const File = require('./file')
+const FormData = require('./FormData')
+const File = require('./File')
 
 type method = 'get' | 'post' | 'put' | 'options' | 'delete' | 'patch' | 'connect' | 'trace' | 'head'
 type sendType = string | object | FormData | undefined | null
@@ -13,7 +13,7 @@ type responseTypeNode = 'json' | 'text' | 'binary'
 let encodingReg: RegExp = /charset=(\S+)[;]?/,
     emptyFn: Function = new Function(),
     _defaultErrorFn = err => {
-      throw err
+      console.error(err)
     };
 
 // node 环境下没有 XHR 我们需要封装一个
@@ -106,14 +106,15 @@ class XMLHttpRequest {
     this.res = res
     let dataList = [], finalData, encoding;
     let temp = encodingReg.exec(res.headers["content-type"])
+
     encoding = (temp && temp[1]) || 'utf-8'
     this.status = res.statusCode
     this.statusText = res.statusMessage
+
+
     res.on('data', data => dataList.push(data))
     res.on('end', () => {
       finalData = Buffer.concat(dataList)
-      // process responseType
-
       switch (this.responseType) {
         case "json":
           try {
@@ -128,6 +129,7 @@ class XMLHttpRequest {
         case "text":
           this.response = finalData.toString(encoding)
       }
+
       this.responseText = finalData.toString(encoding)
       // down
       this.readyState = this.DONE
@@ -139,24 +141,26 @@ class XMLHttpRequest {
     this.req.on('timeout', this.ontimeout || emptyFn)
     this.req.on('abort', this.onabort || emptyFn)
     this.req.on('error', this.onerror || _defaultErrorFn)
+
     // process request body
     if (['post', 'delete', 'put'].includes(this.method.toLowerCase())) {
       if (typeof data === 'object' && data != null && !(data instanceof FormData))
         data = JSON.stringify(data)
       if (typeof data === "string") {
+
         // json header
         if (isJson(data))
           this.req.setHeader('Content-Type', 'application/json;charset=utf-8')
         // text header
         else
           this.req.setHeader('Content-Type', 'text/plain;charset=utf-8')
-        console.log(data)
-        this.req.write(data, 'utf-8')
 
+        this.req.write(data, 'utf-8')
       } else if (data instanceof FormData) {
         // FORM-DATA
-        this.req.setHeader('Content-Type', `multipart/form-data; boundary=${data.id.substring(2)}`)
         let bufferList = parseFormData(data)
+
+        this.req.setHeader('Content-Type', `multipart/form-data; boundary=${data.id.substring(2)}`)
         this.req.write(bufferList)
         this.req.write(data.id + '--', 'utf8')
       }
