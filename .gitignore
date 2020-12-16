@@ -6,4 +6,4 @@ dist
 src/**/*.js
 bin
 lib
-*.js
+**/*.js
