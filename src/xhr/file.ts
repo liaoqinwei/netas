@@ -9,9 +9,9 @@ class File {
   filename: string
   suffix: string
   path: string
-
+  // @ts-ignore
   content: Buffer = null
-
+  
   constructor(path) {
     this.path = path
     this.init()
