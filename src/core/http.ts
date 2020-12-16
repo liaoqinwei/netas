@@ -1,5 +1,5 @@
-import {FullRequestCfg, NetworkCfg} from "../conf/conf";
-import {Response} from "../conf/conf";
+import {FullRequestCfg, NetworkCfg} from "../type/conf";
+import {Response} from "../type/conf";
 
 // @ts-ignore
 export default interface Http {
@@ -15,7 +15,7 @@ export default interface Http {
   createHttp(): Http
 
   // 请求错误时
-  requestFail(conf:FullRequestCfg): Response
+  requestFail(conf:FullRequestCfg)
 
   // 请求成功
   requestSuccess(conf:FullRequestCfg): Response

@@ -6,7 +6,7 @@ export type requestType = string | FormData
 export interface NetworkCfg {
   baseUrl?: string
   headers?: object
-  data?: object
+  data?: requestType|object
   params?: object
   dataType?: dataType
   method?: 'get' | 'head' | 'options' | 'trace' | 'post' | 'put' | 'delete'

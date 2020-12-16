@@ -1,8 +1,9 @@
 import Http from "./http";
-import {FullRequestCfg, NetworkCfg, RequestCfg, Response} from "../conf/conf";
+import {FullRequestCfg, NetworkCfg, RequestCfg, Response} from "../type/conf";
 import AbstractHttp from "./abstractHttp";
 
 export default class HttpRequest extends AbstractHttp {
+  // default config
   defaults: NetworkCfg = {
     baseUrl: '',
     headers: {},
@@ -29,18 +30,13 @@ export default class HttpRequest extends AbstractHttp {
         if (xhr.readyState === 4) {
           let code = xhr.status
           // 成功
-          if (/^[2|3].{2}/.test(code.toString())) {
-            resolve(this.requestSuccess(conf))
-          } else {
-            // 失败
-            reject(this.requestFail(conf))
-          }
+          if (/^[2|3][\d]{2}/.test(code.toString())) resolve(this.requestSuccess(conf))
+          else reject(this.requestFail(conf))
         }
       }
       // 发生错误
-      xhr.onerror = (ev) => {
-        reject(ev)
-      }
+      xhr.onerror = (ev:any) => reject(this.requestFail(ev))
+      xhr.ontimeout = (ev:any) => reject(this.requestFail(ev))
     })
   }
 
@@ -50,22 +46,12 @@ export default class HttpRequest extends AbstractHttp {
   }
 
   // 响应失败
-  requestFail(conf: FullRequestCfg): Response {
-    let res: Response
-    let status = conf.xhr.status,
-        data = conf.xhr.response,
-        headers = conf.xhr.getAllResponseHeaders(),
-        reason = conf.xhr.statusText,
-        url = conf.finalUrl,
-        headerMap = {};
-    if (headers !== '') {
-      let headerList = headers.trim().split('\n\r')
-      for (let i = 0; i < headerList.length; i += 2) {
-        headerMap[headerList[i]] = headerList[i + 1]
-      }
+  requestFail(conf: FullRequestCfg) {
+    let xhr = conf.xhr
+    return {
+      code: xhr.status,
+      xhr
     }
-    res = {status, data, reason, url, headers: headerMap}
-    return res
   }
 
   // 响应成功
@@ -77,7 +63,8 @@ export default class HttpRequest extends AbstractHttp {
         reason: string = conf.xhr.statusText,
         url: string = conf.finalUrl,
         headerMap = {}
-    let headerList = headers.trim().split('\n\r')
+
+    let headerList = headers.trim().split(/(?:\r\n)|(?:: )/)
     for (let i = 0; i < headerList.length; i += 2) {
       headerMap[headerList[i]] = headerList[i + 1]
     }

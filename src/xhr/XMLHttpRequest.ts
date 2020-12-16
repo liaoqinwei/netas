@@ -91,9 +91,13 @@ class XMLHttpRequest {
       req.end()
     } else { // file
       this.readyState = this.LOADING
-      let file = new File(this.url)
-      this.response = file.content
-      this.responseText = file.content.toString('utf8')
+      try {
+        let file = new File(this.url)
+        this.response = file.content
+        this.responseText = file.content.toString('utf8')
+      } catch (e) {
+        this.onerror && this.onerror(e)
+      }
       this.readyState = this.DONE
     }
   }
@@ -112,7 +116,11 @@ class XMLHttpRequest {
 
       switch (this.responseType) {
         case "json":
-          this.response = JSON.parse(finalData)
+          try {
+            this.response = JSON.parse(finalData)
+          } catch (e) {
+            this.response = finalData.toString(encoding)
+          }
           break
         case "binary":
           this.response = finalData
@@ -142,6 +150,7 @@ class XMLHttpRequest {
         // text header
         else
           this.req.setHeader('Content-Type', 'text/plain;charset=utf-8')
+        console.log(data)
         this.req.write(data, 'utf-8')
 
       } else if (data instanceof FormData) {
@@ -169,7 +178,7 @@ class XMLHttpRequest {
       let headers = ''
       for (let [header, val] of Object.entries(this.res.headers))
         headers += header + ': ' + val + '\r\n'
-      return headers.substring(0, headers.length - 2)
+      return headers.trim()
     }
   }
 

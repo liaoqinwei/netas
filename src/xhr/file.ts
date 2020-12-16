@@ -3,7 +3,6 @@ const fs = require('fs')
 const mime = require('mime')
 
 
-
 class File {
   mime: any
   filename: string
@@ -11,7 +10,7 @@ class File {
   path: string
   // @ts-ignore
   content: Buffer = null
-  
+
   constructor(path) {
     this.path = path
     this.init()
@@ -23,11 +22,7 @@ class File {
   }
 
   readFile(): void {
-    try {
-      this.content = fs.readFileSync(this.path)
-    } catch (e) {
-      console.log(e.message)
-    }
+    this.content = fs.readFileSync(this.path)
   }
 
   parseFile(): void {
