@@ -1,11 +1,12 @@
 {
   "name": "netas",
-  "version": "0.1.0",
+  "version": "0.1.5",
   "description": "this library for sending Ajax requests.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc -p ./"
+    "build": "tsc -p ./",
+    "publish": "npm publish --registry=https://registry.npmjs.org"
   },
   "keywords": [
     "netas"
