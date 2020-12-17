@@ -1,6 +1,6 @@
 // 配置
 export type responseType = '' | 'arraybuffer' | 'blob' | 'json' | 'text' | 'document'
-export type dataType = 'json' | 'urlencode' | ''
+export type dataType = 'json' | 'multipart' | ''
 export type requestType = string | FormData
 
 export interface NetasCfg {

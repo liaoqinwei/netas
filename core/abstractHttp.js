@@ -61,7 +61,7 @@ var AbstractHttp = /** @class */ (function () {
     AbstractHttp.prototype.dataHandle = function () {
         var res = this.config.data;
         if (!(res instanceof FormData)) {
-            if (this.config.dataType === 'urlencode')
+            if (this.config.dataType === 'multipart')
                 res = this.urlencodedParse();
             else if (this.config.dataType === 'json')
                 res = JSON.stringify(this.config.data);

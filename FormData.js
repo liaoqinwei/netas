@@ -7,10 +7,7 @@ var FormData = /** @class */ (function () {
         this.id = '------' + uuidv4().substr(0, 25).replace(/-/g, '');
     }
     FormData.prototype.append = function (key, val) {
-        if (val instanceof File) {
-            this.isMultipart = true;
-        }
-        (this.datas[key] = [] || []).push(val);
+        (this.datas[key] = this.datas[key] || []).push(val);
     };
     FormData.prototype.delete = function (key) {
         this.datas[key] || this.datas[key].shift();

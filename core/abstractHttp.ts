@@ -59,7 +59,7 @@ export default abstract class AbstractHttp implements Http {
     let res: any = this.config.data
 
     if (!(res instanceof FormData)) {
-      if (this.config.dataType === 'urlencode') res = this.urlencodedParse()
+      if (this.config.dataType === 'multipart') res = this.urlencodedParse()
       else if (this.config.dataType === 'json') res = JSON.stringify(this.config.data)
     }
     this.config.finalData = res

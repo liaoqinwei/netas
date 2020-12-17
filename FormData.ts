@@ -6,29 +6,24 @@ const File = require('./File')
 class FormData {
   public datas = {}
   public readonly id = '------' + uuidv4().substr(0, 25).replace(/-/g, '')
-  isMultipart: boolean
 
-  append(key, val) {
-    if (val instanceof File) {
-      this.isMultipart = true
-    }
-
-    (this.datas[key] = [] || []).push(val)
+  append(key:string, val) {
+    (this.datas[key] = this.datas[key] || []).push(val)
   }
 
-  delete(key) {
+  delete(key:string) {
     this.datas[key] || this.datas[key].shift()
   }
 
-  get(key) {
+  get(key:string) {
     return this.datas[key] || this.datas[key][0]
   }
 
-  set(key, val) {
+  set(key:string, val) {
     this.datas[key] = [val]
   }
 
-  getAll(key) {
+  getAll(key:string) {
     return this.datas[key]
   }
 
