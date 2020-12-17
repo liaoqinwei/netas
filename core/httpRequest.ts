@@ -1,10 +1,10 @@
 import Http from "./http";
-import {FullRequestCfg, NetworkCfg, RequestCfg, Response} from "../type/conf";
+import {FullRequestCfg, NetasCfg, RequestCfg, Response} from "../type/conf";
 import AbstractHttp from "./abstractHttp";
 
 export default class HttpRequest extends AbstractHttp {
   // default config
-  defaults: NetworkCfg = {
+  defaults: NetasCfg = {
     baseUrl: '',
     headers: {},
     data: {},
@@ -23,7 +23,8 @@ export default class HttpRequest extends AbstractHttp {
     if (conf.url === '' || conf.url == null) throw new Error('必须传入一个请求地址');
     this.send(conf)
     conf = this.config
-    let xhr = this.config.xhr
+    // @ts-ignore
+    let xhr = conf.xhr
     return new Promise<Response>((resolve, reject) => {
       xhr.onreadystatechange = () => {
         // 请求已经回来
@@ -31,12 +32,12 @@ export default class HttpRequest extends AbstractHttp {
           let code = xhr.status
           // 成功
           if (/^[2|3][\d]{2}/.test(code.toString())) resolve(this.requestSuccess(conf))
-          else reject(this.requestFail(conf))
+          else reject && reject(this.requestFail(conf))
         }
       }
       // 发生错误
-      xhr.onerror = (ev:any) => reject(this.requestFail(ev))
-      xhr.ontimeout = (ev:any) => reject(this.requestFail(ev))
+      xhr.onerror = (ev: any) => reject && reject(this.requestFail(ev))
+      xhr.ontimeout = (ev: any) => reject && reject(this.requestFail(ev))
     })
   }
 
@@ -45,9 +46,11 @@ export default class HttpRequest extends AbstractHttp {
     return new HttpRequest();
   }
 
-  // 响应失败
-  requestFail(conf: FullRequestCfg) {
-    let xhr = conf.xhr
+  /**
+   * @param conf FullRequestCfg | ProgressEvent | object
+   */
+  requestFail(conf: any) {
+    let xhr = conf.xhr || conf.target
     return {
       code: xhr.status,
       xhr
@@ -65,10 +68,10 @@ export default class HttpRequest extends AbstractHttp {
         headerMap = {}
 
     let headerList = headers.trim().split(/(?:\r\n)|(?:: )/)
-    for (let i = 0; i < headerList.length; i += 2) {
+    for (let i = 0; i < headerList.length && headerList.length > 2; i += 2) {
       headerMap[headerList[i]] = headerList[i + 1]
     }
-    res = {status, data, reason, url, headers: headerMap}
+    res = {status, data, reason, url, headers: headerMap, xhr: conf.xhr}
     return res
   }
 }

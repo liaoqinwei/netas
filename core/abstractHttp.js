@@ -87,6 +87,8 @@ var AbstractHttp = /** @class */ (function () {
             case "json":
                 this.config.headers["Content-Type"] = 'application/json';
                 return;
+            case "":
+                this.config.headers["Content-Type"] = "text/plain";
         }
     };
     // 配置解析

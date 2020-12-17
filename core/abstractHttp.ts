@@ -1,5 +1,5 @@
 import Http from './http'
-import {FullRequestCfg, NetworkCfg, RequestCfg, requestType, Response} from "../type/conf"
+import {FullRequestCfg, NetasCfg, RequestCfg, requestType, Response} from "../type/conf"
 
 var XMLHttpRequest = XMLHttpRequest
 var FormData = FormData
@@ -11,7 +11,7 @@ if (typeof window === "undefined") {
 }
 
 export default abstract class AbstractHttp implements Http {
-  abstract defaults: NetworkCfg
+  abstract defaults: NetasCfg
   abstract config: FullRequestCfg
 
   /**
@@ -25,7 +25,6 @@ export default abstract class AbstractHttp implements Http {
 
     baseUrl.lastIndexOf('/') === baseUrl.length - 1 ? baseUrl = baseUrl.substring(0, baseUrl.length - 1) : null
     url.indexOf('/') !== 0 ? url = '/' + url : null;
-
     return baseUrl + url;
   }
 
@@ -58,12 +57,13 @@ export default abstract class AbstractHttp implements Http {
    */
   dataHandle(): requestType {
     let res: any = this.config.data
+
     if (!(res instanceof FormData)) {
       if (this.config.dataType === 'urlencode') res = this.urlencodedParse()
       else if (this.config.dataType === 'json') res = JSON.stringify(this.config.data)
     }
-
     this.config.finalData = res
+
     return res;
   }
 
@@ -85,6 +85,8 @@ export default abstract class AbstractHttp implements Http {
       case "json":
         this.config.headers["Content-Type"] = 'application/json'
         return
+      case "":
+        this.config.headers["Content-Type"] = "text/plain"
     }
   }
 
@@ -139,7 +141,7 @@ export default abstract class AbstractHttp implements Http {
   processedResponseHandle() {
   }
 
-  abstract request(conf: NetworkCfg): Promise<Response>
+  abstract request(conf: NetasCfg): Promise<Response>
 
   abstract createHttp(): Http
 

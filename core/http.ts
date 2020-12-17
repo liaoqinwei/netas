@@ -1,15 +1,15 @@
-import {FullRequestCfg, NetworkCfg} from "../type/conf";
+import {FullRequestCfg, NetasCfg} from "../type/conf";
 import {Response} from "../type/conf";
 
 // @ts-ignore
 export default interface Http {
   // 默认配置
-  defaults: NetworkCfg
+  defaults: NetasCfg
 
   config:FullRequestCfg
 
   // 请求函数
-  request(conf: NetworkCfg): Promise<Response>
+  request(conf: NetasCfg): Promise<Response>
 
   // 创建http对象
   createHttp(): Http

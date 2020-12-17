@@ -3,7 +3,7 @@ export type responseType = '' | 'arraybuffer' | 'blob' | 'json' | 'text' | 'docu
 export type dataType = 'json' | 'urlencode' | ''
 export type requestType = string | FormData
 
-export interface NetworkCfg {
+export interface NetasCfg {
   baseUrl?: string
   headers?: object
   data?: requestType|object
@@ -16,7 +16,7 @@ export interface NetworkCfg {
 }
 
 // 用户请求时的类型定义
-export interface RequestCfg extends NetworkCfg {
+export interface RequestCfg extends NetasCfg {
   url: string
 }
 
@@ -34,4 +34,5 @@ export interface Response {
   readonly data: any
   // @ts-ignore
   readonly headers: object
+  readonly xhr:XMLHttpRequest
 }

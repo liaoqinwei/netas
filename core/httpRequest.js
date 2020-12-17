@@ -41,7 +41,8 @@ var HttpRequest = /** @class */ (function (_super) {
             throw new Error('必须传入一个请求地址');
         this.send(conf);
         conf = this.config;
-        var xhr = this.config.xhr;
+        // @ts-ignore
+        var xhr = conf.xhr;
         return new Promise(function (resolve, reject) {
             xhr.onreadystatechange = function () {
                 // 请求已经回来
@@ -51,21 +52,23 @@ var HttpRequest = /** @class */ (function (_super) {
                     if (/^[2|3][\d]{2}/.test(code.toString()))
                         resolve(_this.requestSuccess(conf));
                     else
-                        reject(_this.requestFail(conf));
+                        reject && reject(_this.requestFail(conf));
                 }
             };
             // 发生错误
-            xhr.onerror = function (ev) { return reject(_this.requestFail(ev)); };
-            xhr.ontimeout = function (ev) { return reject(_this.requestFail(ev)); };
+            xhr.onerror = function (ev) { return reject && reject(_this.requestFail(ev)); };
+            xhr.ontimeout = function (ev) { return reject && reject(_this.requestFail(ev)); };
         });
     };
     // 可以返回一个新的请求对象
     HttpRequest.prototype.createHttp = function () {
         return new HttpRequest();
     };
-    // 响应失败
+    /**
+     * @param conf FullRequestCfg | ProgressEvent | object
+     */
     HttpRequest.prototype.requestFail = function (conf) {
-        var xhr = conf.xhr;
+        var xhr = conf.xhr || conf.target;
         return {
             code: xhr.status,
             xhr: xhr
@@ -76,10 +79,10 @@ var HttpRequest = /** @class */ (function (_super) {
         var res;
         var status = conf.xhr.status, data = conf.xhr.response, headers = conf.xhr.getAllResponseHeaders(), reason = conf.xhr.statusText, url = conf.finalUrl, headerMap = {};
         var headerList = headers.trim().split(/(?:\r\n)|(?:: )/);
-        for (var i = 0; i < headerList.length; i += 2) {
+        for (var i = 0; i < headerList.length && headerList.length > 2; i += 2) {
             headerMap[headerList[i]] = headerList[i + 1];
         }
-        res = { status: status, data: data, reason: reason, url: url, headers: headerMap };
+        res = { status: status, data: data, reason: reason, url: url, headers: headerMap, xhr: conf.xhr };
         return res;
     };
     return HttpRequest;

@@ -10,7 +10,7 @@ var __assign = (this && this.__assign) || function () {
     return __assign.apply(this, arguments);
 };
 // @ts-nocheck
-var http = require('http');
+var http = require('./util/http');
 var url = require('url');
 var isJson = require('is-json');
 var FormData = require('./FormData');
@@ -33,6 +33,7 @@ var XMLHttpRequest = /** @class */ (function () {
         };
         this.timeout = 1000 * 10;
         this.responseType = 'text';
+        this.status = 0;
         this.readyState = this.UNSENT;
     }
     Object.defineProperty(XMLHttpRequest.prototype, "readyState", {
@@ -55,35 +56,39 @@ var XMLHttpRequest = /** @class */ (function () {
         this.method = method;
     };
     XMLHttpRequest.prototype.send = function (data) {
+        var _this = this;
         // send
         this.readyState = this.HEADERS_RECEIVED;
         var options = __assign(__assign({}, url.parse(this.url)), { method: this.method, headers: this.headers, timeout: this.timeout });
         var protocol = options.protocol;
-        if (protocol !== null) {
+        if (/http[s]?/.test(protocol)) {
             // http / https
-            // https for 443 port
-            if (protocol === 'https:')
-                options.port = 443;
             this.readyState = this.LOADING;
             // res process
-            var req = http.request(options, this.processResponse.bind(this));
+            var req = http(options, this.processResponse.bind(this));
             this.req = req;
             this.processRequest(data);
             // req end
             req.end();
+            return;
         }
-        else { // file
-            this.readyState = this.LOADING;
+        // file
+        queueMicrotask(function () {
+            _this.readyState = _this.LOADING;
             try {
-                var file = new File(this.url);
-                this.response = file.content;
-                this.responseText = file.content.toString('utf8');
+                var file = new File(_this.url);
+                _this.response = file.content;
+                _this.responseText = file.content.toString('utf8');
+                _this.status = 200;
+                _this.res = { headers: {} };
             }
             catch (e) {
-                this.onerror && this.onerror(e);
+                _this.onerror && _this.onerror({ target: _this });
             }
-            this.readyState = this.DONE;
-        }
+            finally {
+                _this.readyState = _this.DONE;
+            }
+        });
     };
     XMLHttpRequest.prototype.processResponse = function (res) {
         var _this = this;
@@ -96,6 +101,7 @@ var XMLHttpRequest = /** @class */ (function () {
         res.on('data', function (data) { return dataList.push(data); });
         res.on('end', function () {
             finalData = Buffer.concat(dataList);
+            _this.responseText = finalData.toString(encoding);
             switch (_this.responseType) {
                 case "json":
                     try {
@@ -109,9 +115,8 @@ var XMLHttpRequest = /** @class */ (function () {
                     _this.response = finalData;
                     break;
                 case "text":
-                    _this.response = finalData.toString(encoding);
+                    _this.response = _this.responseText;
             }
-            _this.responseText = finalData.toString(encoding);
             // down
             _this.readyState = _this.DONE;
         });

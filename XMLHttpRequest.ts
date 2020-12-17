@@ -1,5 +1,5 @@
 // @ts-nocheck
-const http = require('http')
+const http = require('./util/http')
 const url = require('url')
 const isJson = require('is-json')
 const FormData = require('./FormData')
@@ -46,7 +46,7 @@ class XMLHttpRequest {
 
   // state
   statusText
-  status
+  status = 0
   privateReadyState
 
   // event
@@ -78,28 +78,34 @@ class XMLHttpRequest {
 
     let options = {...url.parse(this.url), method: this.method, headers: this.headers, timeout: this.timeout}
     let protocol = options.protocol
-    if (protocol !== null) {
+    if (/http[s]?/.test(protocol)) {
       // http / https
-      // https for 443 port
-      if (protocol === 'https:') options.port = 443
       this.readyState = this.LOADING
       // res process
-      let req = http.request(options, this.processResponse.bind(this))
+      let req = http(options, this.processResponse.bind(this))
       this.req = req
       this.processRequest(data)
       // req end
       req.end()
-    } else { // file
+      return
+    }
+
+    // file
+    queueMicrotask(() => {
       this.readyState = this.LOADING
       try {
         let file = new File(this.url)
         this.response = file.content
         this.responseText = file.content.toString('utf8')
+        this.status = 200
+        this.res = {headers: {}}
       } catch (e) {
-        queueMicrotask(() => this.onerror && this.onerror(e))
+        this.onerror && this.onerror({target: this})
+      } finally {
+        this.readyState = this.DONE
       }
-      this.readyState = this.DONE
-    }
+    })
+
   }
 
   private processResponse(res) {
@@ -115,6 +121,7 @@ class XMLHttpRequest {
     res.on('data', data => dataList.push(data))
     res.on('end', () => {
       finalData = Buffer.concat(dataList)
+      this.responseText = finalData.toString(encoding)
       switch (this.responseType) {
         case "json":
           try {
@@ -127,10 +134,8 @@ class XMLHttpRequest {
           this.response = finalData
           break
         case "text":
-          this.response = finalData.toString(encoding)
+          this.response = this.responseText
       }
-
-      this.responseText = finalData.toString(encoding)
       // down
       this.readyState = this.DONE
     })
