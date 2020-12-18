@@ -6,4 +6,4 @@ dist
 bin
 lib
 **/*.js
-*.js
+/*.js
