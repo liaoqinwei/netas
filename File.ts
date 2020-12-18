@@ -11,7 +11,7 @@ class File {
   // @ts-ignore
   content: Buffer = null
 
-  constructor(path) {
+  constructor(path: string) {
     this.path = path
     this.init()
   }

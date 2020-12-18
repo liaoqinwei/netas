@@ -1,10 +1,11 @@
 {
   "name": "netas",
-  "version": "0.1.5",
+  "version": "0.2.0",
   "description": "this library for sending Ajax requests.",
   "author": "liaoqinwei",
   "license": "MIT",
   "main": "index.js",
+  "types": "index.d.ts",
   "keywords": [
     "netas"
   ],

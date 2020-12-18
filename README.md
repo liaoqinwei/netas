@@ -178,4 +178,4 @@ netas.request(config).then(res=>{
 
 **Netas** doesn't test too much, it may still have bugs .
 
-The official version is 0.1.5, please do not use the version below 0.1.5 .
+Please choose the latest version first, others may have bugs .

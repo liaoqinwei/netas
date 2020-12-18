@@ -1,8 +1,6 @@
 // @ts-nocheck
 const {v4: uuidv4} = require('uuid')
 
-const File = require('./File')
-
 class FormData {
   public datas = {}
   public readonly id = '------' + uuidv4().substr(0, 25).replace(/-/g, '')

@@ -3,5 +3,5 @@ lib/src/test
 node_modules
 .idea
 *.iml
-.gitignore
 *.ts
+!*.d.ts
