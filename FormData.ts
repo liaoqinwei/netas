@@ -41,3 +41,4 @@ class FormData {
 }
 
 module.exports = FormData
+export default FormData

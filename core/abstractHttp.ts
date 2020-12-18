@@ -1,18 +1,11 @@
 import Http from './http'
 import {FullRequestCfg, NetasCfg, RequestCfg, requestType, Response} from "../type/conf"
 
-var XMLHttpRequest = XMLHttpRequest
-var FormData = FormData
-if (typeof window === "undefined") {
-  // @ts-ignore
-  XMLHttpRequest = require('../XMLHttpRequest')
-  // @ts-ignore
-  FormData = require('../FormData')
-}
-
 export default abstract class AbstractHttp implements Http {
   abstract defaults: NetasCfg
   abstract config: FullRequestCfg
+  static XMLHttpRequest
+  static FormData
 
   /**
    * 将传入的 url 和 baseUrl合并
@@ -58,7 +51,7 @@ export default abstract class AbstractHttp implements Http {
   dataHandle(): requestType {
     let res: any = this.config.data
 
-    if (!(res instanceof FormData)) {
+    if (!(res instanceof AbstractHttp.FormData)) {
       if (this.config.dataType === 'multipart') res = this.urlencodedParse()
       else if (this.config.dataType === 'json') res = JSON.stringify(this.config.data)
     }
@@ -71,7 +64,7 @@ export default abstract class AbstractHttp implements Http {
    * 将对象转换为 FormData对象
    */
   urlencodedParse(): FormData {
-    let formData: FormData = new FormData()
+    let formData: FormData = new AbstractHttp.FormData()
     let keys: string[] = Object.keys(this.config.data)
     keys.forEach((key: string) => {
       formData.append(key, this.config.data[key])
@@ -106,7 +99,7 @@ export default abstract class AbstractHttp implements Http {
       processedConfig[key] = confItem
     })
 
-    let xhr: XMLHttpRequest = new XMLHttpRequest()
+    let xhr: XMLHttpRequest = new AbstractHttp.XMLHttpRequest()
     xhr.responseType = conf.responseType
     xhr.timeout = conf.timeout
 

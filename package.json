@@ -2,17 +2,24 @@
   "name": "netas",
   "version": "0.1.5",
   "description": "this library for sending Ajax requests.",
+  "author": "liaoqinwei",
+  "license": "MIT",
   "main": "index.js",
+  "keywords": [
+    "netas"
+  ],
+  "bugs": {
+    "email": "2573424017@qq.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/liaoqinwei/netas"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc -p ./",
     "publish": "npm publish --registry=https://registry.npmjs.org"
   },
-  "keywords": [
-    "netas"
-  ],
-  "author": "liaoqinwei",
-  "license": "MIT",
   "devDependencies": {
     "@types/node": "^14.14.14"
   },

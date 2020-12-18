@@ -11,14 +11,6 @@ var __assign = (this && this.__assign) || function () {
     return __assign.apply(this, arguments);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var XMLHttpRequest = XMLHttpRequest;
-var FormData = FormData;
-if (typeof window === "undefined") {
-    // @ts-ignore
-    XMLHttpRequest = require('../XMLHttpRequest');
-    // @ts-ignore
-    FormData = require('../FormData');
-}
 var AbstractHttp = /** @class */ (function () {
     function AbstractHttp() {
     }
@@ -60,7 +52,7 @@ var AbstractHttp = /** @class */ (function () {
      */
     AbstractHttp.prototype.dataHandle = function () {
         var res = this.config.data;
-        if (!(res instanceof FormData)) {
+        if (!(res instanceof AbstractHttp.FormData)) {
             if (this.config.dataType === 'multipart')
                 res = this.urlencodedParse();
             else if (this.config.dataType === 'json')
@@ -74,7 +66,7 @@ var AbstractHttp = /** @class */ (function () {
      */
     AbstractHttp.prototype.urlencodedParse = function () {
         var _this = this;
-        var formData = new FormData();
+        var formData = new AbstractHttp.FormData();
         var keys = Object.keys(this.config.data);
         keys.forEach(function (key) {
             formData.append(key, _this.config.data[key]);
@@ -103,7 +95,7 @@ var AbstractHttp = /** @class */ (function () {
                 confItem = __assign(__assign({}, confItem), item);
             processedConfig[key] = confItem;
         });
-        var xhr = new XMLHttpRequest();
+        var xhr = new AbstractHttp.XMLHttpRequest();
         xhr.responseType = conf.responseType;
         xhr.timeout = conf.timeout;
         processedConfig["xhr"] = xhr;

@@ -1,9 +1,10 @@
-import HttpRequest from "./core/httpRequest";
+//in web
 import AbstractHttp  from "./core/abstractHttp";
+import HttpRequest from "./core/httpRequest";
 
 
-AbstractHttp.XMLHttpRequest = require("./XMLHttpRequest")
-AbstractHttp.FormData = require("./FormData")
+AbstractHttp.XMLHttpRequest = window.XMLHttpRequest
+AbstractHttp.FormData = window.FormData
 
 let http: HttpRequest = new HttpRequest();
 
@@ -11,4 +12,3 @@ let http: HttpRequest = new HttpRequest();
 module.exports = http
 // es6
 export default http
-

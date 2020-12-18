@@ -1,3 +1,5 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 // @ts-nocheck
 var uuidv4 = require('uuid').v4;
 var File = require('./File');
@@ -33,3 +35,4 @@ var FormData = /** @class */ (function () {
     return FormData;
 }());
 module.exports = FormData;
+exports.default = FormData;

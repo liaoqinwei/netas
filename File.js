@@ -1,3 +1,5 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 // @ts-nocheck
 var fs = require('fs');
 var mime = require('mime');
@@ -28,3 +30,4 @@ var File = /** @class */ (function () {
     return File;
 }());
 module.exports = File;
+exports.default = File;

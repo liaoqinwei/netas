@@ -225,3 +225,4 @@ function parseFormData(formData: FormData): Buffer {
 }
 
 module.exports = XMLHttpRequest
+export default XMLHttpRequest

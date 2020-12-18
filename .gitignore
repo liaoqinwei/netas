@@ -3,7 +3,7 @@ node_modules
 *.iml
 dist
 **/*.d.ts
-src/**/*.js
 bin
 lib
 **/*.js
+*.js
