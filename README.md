@@ -14,7 +14,7 @@ in Node.js
 
 ```javascript
 // import netas
-var netas = require('README')
+var netas = require('netas')
 
 // Just configure the URL
 var config = {
@@ -37,7 +37,7 @@ if you need to upload single file
 
 ```javascript
 var path = require('path')
-var netas = require('README')
+var netas = require('netas')
 var File = require('netas/File')
 
 
@@ -60,7 +60,7 @@ files
 
 ```javascript
 var path = require('path')
-var netas = require('README')
+var netas = require('netas')
 // import FormData and File ( in node )
 var FormData = require('netas/FormData')
 var File = require('netas/File')
