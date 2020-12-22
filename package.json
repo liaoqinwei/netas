@@ -1,6 +1,6 @@
 {
   "name": "netas",
-  "version": "0.2.0",
+  "version": "0.2.2",
   "description": "this library for sending Ajax requests.",
   "author": "liaoqinwei",
   "license": "MIT",
