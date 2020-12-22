@@ -3,7 +3,6 @@
     "module": "CommonJS",
     "target": "ES5",
     "declaration": true,
-    "declarationDir": "@types",
     "lib": [
       "ES6",
       "ES7",
