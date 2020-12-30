@@ -1,13 +1,17 @@
 {
   "name": "netas",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "this library for sending Ajax requests.",
   "author": "liaoqinwei",
   "license": "MIT",
   "main": "index.js",
   "types": "index.d.ts",
   "keywords": [
-    "netas"
+    "netas",
+    "ajax",
+    "XMLHttpRequest",
+    "request",
+    "http"
   ],
   "bugs": {
     "email": "2573424017@qq.com"
