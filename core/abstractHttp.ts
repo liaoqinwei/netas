@@ -93,7 +93,7 @@ export default abstract class AbstractHttp implements Http {
 
       if (confItem == null)
         confItem = item
-      else if (typeof confItem === 'object' && !(confItem instanceof FormData))
+      else if (typeof confItem === 'object' && !(confItem instanceof AbstractHttp.FormData))
         confItem = {...confItem, ...item}
 
       processedConfig[key] = confItem
